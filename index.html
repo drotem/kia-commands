@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>פקודות קוליות לרכבי קיה</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Hebrew:wght@400;500;600&family=Secular+One&display=swap" rel="stylesheet">
+<style>
+/* Layout idea: a driver's reference sheet. One reading column, a sticky search/filter bar,
+   commands grouped by category in three aligned columns (action | car system | phone). */
+:root {
+  --bg: #EDF0F3;
+  --surface: #FFFFFF;
+  --ink: #14202B;
+  --muted: #5A6774;
+  --line: #D3DAE1;
+  --car: #C93A17;      /* the car's own system (English) */
+  --phone: #0B6A6A;    /* CarPlay / Android Auto (Hebrew) */
+  --chip: #E1E6EB;
+  --font-display: "Secular One", "Arial Hebrew", Arial, sans-serif;
+  --font-body: "IBM Plex Sans Hebrew", "Arial Hebrew", Arial, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --bg: #0F161D; --surface: #18222C; --ink: #E8EDF2; --muted: #96A4B2;
+    --line: #2A3743; --car: #FF7550; --phone: #55C7C0; --chip: #22303C;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0F161D; --surface: #18222C; --ink: #E8EDF2; --muted: #96A4B2;
+  --line: #2A3743; --car: #FF7550; --phone: #55C7C0; --chip: #22303C;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 16px; line-height: 1.55;
+}
+.wrap { max-width: 1040px; margin: 0 auto; padding: 0 20px; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; text-wrap: balance; margin: 0; }
+.ltr { direction: ltr; unicode-bidi: isolate; }
+
+/* Header */
+header { padding: 44px 0 28px; }
+.eyebrow { color: var(--muted); font-size: 14px; font-weight: 500; margin: 0 0 6px; }
+h1 { font-size: clamp(30px, 6vw, 48px); line-height: 1.15; }
+.lede { max-width: 60ch; color: var(--muted); margin: 12px 0 0; font-size: 17px; }
+
+/* How to activate */
+.activate { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin: 8px 0 36px; }
+.mode { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px 20px; border-top: 4px solid var(--c); display: flex; flex-direction: column; gap: 8px; }
+.mode.car { --c: var(--car); } .mode.phone { --c: var(--phone); }
+.mode h3 { font-size: 20px; }
+.mode .lang { font-size: 13px; font-weight: 600; color: var(--c); }
+.mode p { margin: 0; }
+.press { display: flex; align-items: center; gap: 10px; margin-top: auto; padding-top: 8px; font-size: 13px; color: var(--muted); }
+.press i { display: block; height: 8px; border-radius: 4px; background: var(--c); }
+.press .track { flex: 1; height: 8px; border-radius: 4px; background: var(--chip); overflow: hidden; }
+
+/* Toolbar */
+.toolbar { position: sticky; top: 0; z-index: 5; background: var(--bg); padding: 12px 0; border-bottom: 1px solid var(--line); }
+.toolbar .wrap { display: flex; flex-direction: column; gap: 10px; }
+.row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+#q {
+  flex: 1 1 240px; min-width: 0; font: inherit; color: var(--ink); background: var(--surface);
+  border: 1px solid var(--line); border-radius: 8px; padding: 10px 14px;
+}
+#q::placeholder { color: var(--muted); }
+button.chip {
+  font: inherit; font-size: 14px; font-weight: 500; color: var(--ink); background: var(--chip);
+  border: 1px solid transparent; border-radius: 999px; padding: 6px 14px; cursor: pointer;
+}
+button.chip:hover { border-color: var(--muted); }
+button.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+:focus-visible { outline: 2px solid var(--phone); outline-offset: 2px; }
+.count { color: var(--muted); font-size: 14px; margin-inline-start: auto; font-variant-numeric: tabular-nums; }
+
+/* Sections and command rows */
+main { padding: 28px 0 8px; }
+.part { margin-bottom: 40px; }
+.part > h2 { font-size: 26px; }
+.part > p { color: var(--muted); max-width: 65ch; margin: 6px 0 0; }
+.group { margin-top: 22px; }
+.group h3 { font-size: 18px; margin-bottom: 8px; display: flex; align-items: baseline; gap: 8px; }
+.group h3 small { font-family: var(--font-body); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.list { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; overflow: hidden; }
+.cols, .cmd { display: grid; grid-template-columns: 1fr 1.25fr 1.25fr; gap: 6px 20px; padding: 12px 18px; }
+.two .cols, .two .cmd { grid-template-columns: 1fr 1.6fr; }
+.cols { font-size: 13px; font-weight: 600; color: var(--muted); border-bottom: 1px solid var(--line); padding-block: 9px; }
+.cols .c-car { color: var(--car); } .cols .c-phone { color: var(--phone); }
+.cmd + .cmd { border-top: 1px solid var(--line); }
+.cmd .what { font-weight: 600; }
+.cmd .lbl { display: none; font-size: 12px; font-weight: 600; }
+.say { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.en span { font-family: var(--font-mono); font-size: 14.5px; direction: ltr; unicode-bidi: isolate; text-align: left; overflow-wrap: anywhere; }
+.en { direction: ltr; }
+.en .lbl, .en .none { direction: rtl; text-align: left; }
+.he span::before, .he span::after { content: '"'; color: var(--muted); }
+.none { color: var(--muted); font-size: 14px; font-family: var(--font-body) !important; }
+.he .none::before, .he .none::after { content: none; }
+.empty { display: none; padding: 40px 0; color: var(--muted); text-align: center; }
+
+/* Tips */
+.tips { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; margin-top: 16px; }
+.tip { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 16px 20px; }
+.tip h3 { font-size: 17px; margin-bottom: 4px; }
+.tip p { margin: 0; }
+.tip q { quotes: '"' '"'; font-weight: 500; }
+footer { color: var(--muted); font-size: 13px; padding: 20px 0 48px; }
+
+@media (max-width: 720px) {
+  .cols { display: none; }
+  .cmd, .two .cmd { grid-template-columns: 1fr; padding: 14px 16px; }
+  .cmd .lbl { display: block; }
+  .en .lbl { color: var(--car); } .he .lbl { color: var(--phone); }
+  .en { direction: rtl; }
+  .en span { text-align: right; }
+  .en .lbl, .en .none { text-align: right; }
+}
+</style>
+</head>
+<body>
+
+<header class="wrap">
+  <p class="eyebrow">מדריך שימוש לנהג</p>
+  <h1>פקודות קוליות ברכבי קיה</h1>
+  <p class="lede">כל הפקודות הקוליות הזמינות במערכת המולטימדיה המקורית של קיה (באנגלית) ובחיבור לסמארטפון (בעברית), במקום אחד.</p>
+</header>
+
+<section class="wrap" aria-label="אופן ההפעלה מההגה">
+  <div class="activate">
+    <div class="mode car">
+      <span class="lang">באנגלית</span>
+      <h3>מערכת קיה המקורית</h3>
+      <p>לחיצה קצרה על כפתור הדיבור שעל גלגל ההגה, או אמירת <span class="ltr">"Hey Kia"</span> בדגמים החדשים התומכים בכך.</p>
+      <div class="press" aria-hidden="true"><span>לחיצה קצרה</span><div class="track"><i style="width:14%"></i></div></div>
+    </div>
+    <div class="mode phone">
+      <span class="lang">בעברית</span>
+      <h3><span class="ltr">Siri / Google Assistant</span></h3>
+      <p>בעת חיבור ל-<span class="ltr">Apple CarPlay</span> או <span class="ltr">Android Auto</span>, לחצו לחיצה ארוכה (כ-2 שניות) על כפתור הדיבור בהגה.</p>
+      <div class="press" aria-hidden="true"><span>כ-2 שניות</span><div class="track"><i style="width:78%"></i></div></div>
+    </div>
+  </div>
+</section>
+
+<div class="toolbar">
+  <div class="wrap">
+    <div class="row">
+      <input id="q" type="search" placeholder="חיפוש פקודה: מזגן, חלון, navigate, וואטסאפ…" aria-label="חיפוש פקודה" autocomplete="off">
+      <button class="chip" id="lang-all" data-lang="all" aria-pressed="true">כל השפות</button>
+      <button class="chip" id="lang-he" data-lang="he" aria-pressed="false">אפשר בעברית</button>
+      <button class="chip" id="lang-en" data-lang="en" aria-pressed="false">מערכת הרכב</button>
+    </div>
+    <div class="row" id="cats"></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <section class="part" id="main-part">
+    <h2>פקודות ראשיות</h2>
+    <p>לכל פעולה: מה אומרים למערכת של קיה באנגלית, ומה אומרים בעברית דרך <span class="ltr">CarPlay</span> או <span class="ltr">Android Auto</span>.</p>
+    <div id="main-list"></div>
+  </section>
+
+  <section class="part" id="adv-part">
+    <h2>פקודות מתקדמות</h2>
+    <p>באנגלית בלבד, במערכת הרכב. בדגמים החדשים של קיה (מערכות <span class="ltr">ccNC / Gen5W</span>) קיימות פקודות מורחבות לשליטה מדויקת במיזוג, בתאורה, במסכים ובניווט.</p>
+    <div id="adv-list"></div>
+  </section>
+
+  <p class="empty" id="empty">לא נמצאו פקודות מתאימות. נסו מילה אחרת או נקו את הסינון.</p>
+
+  <section class="part" id="tips-part">
+    <h2>עוד פקודות בעברית ודגשים לנהג</h2>
+    <div class="tips">
+      <div class="tip"><h3>ניווט דרך Waze ב-CarPlay</h3><p>אמרו <q>נווט דרך ווייז ל[יעד]</q> כדי לפתוח ישירות את ווייז במקום את אפליקציית המפות המובנית של אפל.</p></div>
+      <div class="tip"><h3>שליחת הודעות מוכתבות</h3><p>אפשר להכתיב תוכן מלא, למשל: <q>שלח הודעת וואטסאפ ל[שם] שאומר: אני בדרך, מגיע בעוד 10 דקות</q>.</p></div>
+      <div class="tip"><h3>בדיקת יומן ותזכורות</h3><p>אפשר לשאול <q>מה הפגישה הבאה שלי היום?</q> או לבקש <q>תזכיר לי כשאגיע הביתה לבדוק את הדואר</q>.</p></div>
+      <div class="tip"><h3>שפה טבעית במערכת קיה</h3><p>אין צורך לשנן נוסח מדויק מילה במילה. אמירת <span class="ltr">"I'm cold"</span> או <span class="ltr">"Make it warmer"</span> תעלה אוטומטית את טמפרטורת המזגן ב-2 מעלות.</p></div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">מבוסס על "מדריך פקודות קוליות לרכבי קיה". זמינות הפקודות תלויה בדגם הרכב ובגרסת המערכת.</footer>
+
+<script>
+// s: section (m = main, a = advanced), c: category, w: action, en / he: what to say (null = not supported)
+const DATA = [
+  {s:'m',c:'ניווט ודרכים',w:'ניווט הביתה / לעבודה',en:['Go home','Go to work'],he:['נווט הביתה','נווט לעבודה']},
+  {s:'m',c:'ניווט ודרכים',w:'ניווט לכתובת ספציפית',en:['Navigate to [Address]'],he:['נווט לרחוב רוטשילד 10 תל אביב']},
+  {s:'m',c:'ניווט ודרכים',w:'חיפוש תחנת דלק / בית קפה',en:['Find nearest gas station','Find coffee shop'],he:['מצא תחנת דלק קרובה','נווט לבית קפה קרוב']},
+  {s:'m',c:'ניווט ודרכים',w:'ביטול מסלול ניווט',en:['Cancel route'],he:['בטל ניווט','הפסק ניווט']},
+  {s:'m',c:'ניווט ודרכים',w:'בדיקת עומסי תנועה',en:['Traffic information'],he:['מה מצב התנועה בדרך לעבודה?']},
+  {s:'m',c:'טלפון והודעות',w:'חיוג לאיש קשר',en:['Call [Contact Name]'],he:['תתקשר ל[שם איש הקשר]']},
+  {s:'m',c:'טלפון והודעות',w:'חיוג למספר טלפון',en:['Dial [Phone Number]'],he:['חייג ל-050-1234567']},
+  {s:'m',c:'טלפון והודעות',w:'חיוג חוזר למספר אחרון',en:['Call back'],he:['חזור לשיחה האחרונה']},
+  {s:'m',c:'טלפון והודעות',w:'שליחת הודעה (SMS / WhatsApp)',en:['Send a message to [Contact Name]'],he:['שלח הודעת וואטסאפ ל[שם]']},
+  {s:'m',c:'טלפון והודעות',w:'הקראת הודעות נכנסות',en:['Read new messages'],he:['תקריא לי הודעות חדשות']},
+  {s:'m',c:'מדיה ורדיו',w:"מעבר לרדיו / בלוטות'",en:['Play Radio','Play Bluetooth audio'],he:null},
+  {s:'m',c:'מדיה ורדיו',w:'העברה לתדר רדיו מסוים',en:['Tune to 91.8 FM'],he:null},
+  {s:'m',c:'מדיה ורדיו',w:'ניגון שיר / אמן / פלייליסט',en:['Play [Song / Artist]'],he:['נגן שירים של שלמה ארצי']},
+  {s:'m',c:'מדיה ורדיו',w:'דילוג לשיר הבא / עצירה',en:['Next track','Pause music'],he:['שיר הבא','עצור מוזיקה']},
+  {s:'m',c:'מערכות הרכב',w:'הפעלה / כיבוי מזגן',en:['Turn on air conditioning','Turn off AC'],he:null},
+  {s:'m',c:'מערכות הרכב',w:'שינוי טמפרטורה',en:['Set temperature to 22 degrees'],he:null},
+  {s:'m',c:'מערכות הרכב',w:'הפעלת חימום / אוורור מושבים',en:['Turn on heated seats','Turn on ventilated seats'],he:null},
+  {s:'m',c:'מערכות הרכב',w:'הפעלת חימום הגה',en:['Turn on steering wheel heater'],he:null},
+  {s:'m',c:'מערכות הרכב',w:'פתיחה / סגירה של חלון הנהג',en:['Open driver window','Close all windows'],he:null},
+  {s:'m',c:'מערכות הרכב',w:'פתיחה / סגירה של תא המטען',en:['Open trunk','Close trunk'],he:null},
+  {s:'m',c:'מידע כללי',w:'בדיקת מזג אוויר',en:['What is the weather today?'],he:['מה מזג האוויר היום?','מזג האוויר בכפר סבא']},
+  {s:'m',c:'מידע כללי',w:'שאלת השעה / התאריך',en:['What time is it?',"What is today's date?"],he:['מה השעה?','מה התאריך היום?']},
+  {s:'m',c:'מידע כללי',w:'תזכורת / הוספה ליומן',en:null,he:['תזכיר לי מחר ב-10 להתקשר למשרד']},
+
+  {s:'a',c:'מיזוג ואקלים',w:'כיוון עוצמת המאוורר',en:['Set fan speed to 3 (or Max / Low)']},
+  {s:'a',c:'מיזוג ואקלים',w:'כיוון זרימת האוויר',en:['Direct air to face','Direct air to feet']},
+  {s:'a',c:'מיזוג ואקלים',w:'הפשרת אדים (שמשה קדמית / אחורית)',en:['Turn on front defroster','Turn on rear defroster']},
+  {s:'a',c:'מיזוג ואקלים',w:'סירקולציית אוויר (אוויר פנימי)',en:['Turn on air recirculation']},
+  {s:'a',c:'מיזוג ואקלים',w:'סנכרון טמפרטורה (נהג ונוסע)',en:['Sync climate','Turn on dual climate']},
+  {s:'a',c:'מיזוג ואקלים',w:'הפעלת חימום מושב נוסע',en:['Turn on passenger heated seat']},
+  {s:'a',c:'חלונות ומרכב',w:'פתיחה חלקית של חלון',en:['Open driver window halfway (or 20 percent)']},
+  {s:'a',c:'חלונות ומרכב',w:'פתיחת חלון נוסע / אחוריים',en:['Open passenger window','Open rear windows']},
+  {s:'a',c:'חלונות ומרכב',w:'פתיחת / סגירת גג שמש (סאנרוף)',en:['Open sunroof','Close sunroof']},
+  {s:'a',c:'חלונות ומרכב',w:'פתיחת / סגירת וילון גג השמש',en:['Open sunshade','Close sunshade']},
+  {s:'a',c:'מסכים ותאורה',w:'כיבוי מסך המולטימדיה (לנסיעת לילה)',en:['Turn off display']},
+  {s:'a',c:'מסכים ותאורה',w:'שינוי בהירות המסך',en:['Increase display brightness','Decrease display brightness']},
+  {s:'a',c:'מסכים ותאורה',w:'שינוי צבע תאורת האווירה',en:['Change ambient light to blue (or red, green)']},
+  {s:'a',c:'מסכים ותאורה',w:'כיבוי / הדלקת תאורת אווירה',en:['Turn off ambient light','Turn on ambient light']},
+  {s:'a',c:'ניווט מתקדם',w:'הוספת עצירת ביניים במסלול',en:['Add waypoint','Search along route']},
+  {s:'a',c:'ניווט מתקדם',w:'הצגת מסלולים חלופיים',en:['Alternative routes']},
+  {s:'a',c:'ניווט מתקדם',w:'השתקה / ביטול השתקה של הנחיות קוליות',en:['Mute guidance','Unmute guidance']},
+  {s:'a',c:'ניווט מתקדם',w:'שמירת מיקום נוכחי במועדפים',en:['Save current location']},
+  {s:'a',c:'מידע ורכב',w:'בדיקת טווח נסיעה נותר (דלק)',en:['Show driving range','How much fuel do I have?']},
+  {s:'a',c:'מידע ורכב',w:'מעבר למסך הגדרות הרכב',en:['Open vehicle settings']},
+  {s:'a',c:'מידע ורכב',w:'מעבר למסך ספורט (תוצאות משחקים)',en:['Show sports scores']}
+];
+
+const state = { q: '', lang: 'all', cat: 'all' };
+const $ = id => document.getElementById(id);
+const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const cats = [...new Set(DATA.map(d => d.c))];
+
+$('cats').innerHTML = ['all', ...cats].map((c, i) =>
+  `<button class="chip" id="cat-${i}" data-cat="${c}" aria-pressed="${c === 'all'}">${c === 'all' ? 'כל הקטגוריות' : c}</button>`).join('');
+
+function matches(d) {
+  if (state.cat !== 'all' && d.c !== state.cat) return false;
+  if (state.lang === 'he' && !d.he) return false;
+  if (state.lang === 'en' && !d.en) return false;
+  if (!state.q) return true;
+  const hay = [d.c, d.w, ...(d.en || []), ...(d.he || [])].join(' ').toLowerCase();
+  return state.q.toLowerCase().split(/\s+/).filter(Boolean).every(w => hay.includes(w));
+}
+
+function sayCell(cls, label, items, noneText) {
+  const body = items ? items.map(t => `<span>${esc(t)}</span>`).join('')
+                     : `<span class="none">${noneText}</span>`;
+  return `<div class="say ${cls}"><span class="lbl">${label}</span>${body}</div>`;
+}
+
+function renderPart(sec, target, two) {
+  const rows = DATA.filter(d => d.s === sec && matches(d));
+  const html = cats.map(c => {
+    const g = rows.filter(d => d.c === c);
+    if (!g.length) return '';
+    const head = two
+      ? `<div class="cols"><span>פעולה</span><span class="c-car">הפקודה באנגלית</span></div>`
+      : `<div class="cols"><span>פעולה</span><span class="c-car">באנגלית (מערכת קיה)</span><span class="c-phone">בעברית (CarPlay / Android Auto)</span></div>`;
+    return `<div class="group"><h3>${c} <small>${g.length}</small></h3><div class="list${two ? ' two' : ''}">${head}` +
+      g.map(d => `<div class="cmd"><div class="what">${esc(d.w)}</div>` +
+        sayCell('en', 'באנגלית, מערכת קיה', d.en, 'לא נתמך במערכת הרכב') +
+        (two ? '' : sayCell('he', 'בעברית, CarPlay / Android Auto', d.he, 'נתמך במערכת הרכב בלבד')) +
+        `</div>`).join('') + `</div></div>`;
+  }).join('');
+  $(target).innerHTML = html;
+  $(target).parentElement.style.display = rows.length ? '' : 'none';
+  return rows.length;
+}
+
+function render() {
+  const n = renderPart('m', 'main-list', false) + renderPart('a', 'adv-list', true);
+  $('empty').style.display = n ? 'none' : 'block';
+  document.querySelectorAll('[data-lang]').forEach(b => b.setAttribute('aria-pressed', b.dataset.lang === state.lang));
+  document.querySelectorAll('[data-cat]').forEach(b => b.setAttribute('aria-pressed', b.dataset.cat === state.cat));
+}
+
+$('q').addEventListener('input', e => { state.q = e.target.value.trim(); render(); });
+document.querySelector('.toolbar').addEventListener('click', e => {
+  const b = e.target.closest('button.chip');
+  if (!b) return;
+  if (b.dataset.lang) state.lang = b.dataset.lang;
+  if (b.dataset.cat) state.cat = b.dataset.cat;
+  render();
+});
+render();
+</script>
+</body>
+</html>
